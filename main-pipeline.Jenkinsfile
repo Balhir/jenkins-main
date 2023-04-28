@@ -14,5 +14,13 @@ pipeline {
 				sh './mvnw compile jib:dockerBuild -Dimage=jib-hello-world:v1'
 			}
 		}
+		stage('Deploy prepare') {
+			steps {
+				withCredentials([file(credentialsId: 'jenkins-sa', variable: 'secfile')]) {
+			        sh "gcloud auth activate-service-account jenkins-sa@proxy-test-svpc.iam.gserviceaccount.com --key-file=$secfile"
+					sh "kubectl get pods"
+			    }
+			}
+		}
 	}
 }
